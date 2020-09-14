@@ -51,6 +51,7 @@ app.use((req, res, next) => {
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(errorController.get404);
+app.use(authRoutes);
 
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
