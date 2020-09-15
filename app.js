@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 const isAuth = require("./middleware/isAuth");
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -21,6 +22,8 @@ const store = new MongoDBStore({
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+
+// session
 app.use(
   session({
     secret: "typescriptiscoolandall",
@@ -30,7 +33,9 @@ app.use(
   })
 );
 
-// init
+const csrfProtection = csrf();
+app.use(csrfProtection); //must be initialized after the session
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -43,6 +48,7 @@ app.use((req, res, next) => {
     .catch((err) => console.log(err));
 });
 
+//init
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
