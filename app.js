@@ -7,6 +7,8 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const isAuth = require("./middleware/isAuth");
+const flash = require("connect-flash");
+
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 //..................................................................................
@@ -34,6 +36,8 @@ app.use(
 );
 const csrfProtection = csrf();
 app.use(csrfProtection); //must be initialized after the session
+app.use(flash()); //must be initialized after the session
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -55,7 +59,7 @@ app.use((req, res, next) => {
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    app.listen(3000);
+    app.listen(3001);
   })
   .catch((err) => {
     console.log(err);
