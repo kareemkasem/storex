@@ -48,8 +48,8 @@ mongoose
     User.findOne().then((user) => {
       if (!user) {
         const user = new User({
-          name: "Max",
-          email: "max@test.com",
+          name: "kareem",
+          email: "kareem@test.com",
           cart: {
             items: [],
           },
@@ -70,5 +70,5 @@ const authRoutes = require("./routes/auth");
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
-app.use(errorController.get404);
 app.use(authRoutes);
+app.use(errorController.get404);
