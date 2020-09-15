@@ -1,30 +1,23 @@
+//imports..........................................................................
 const path = require("path");
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
-
 const errorController = require("./controllers/error");
 const User = require("./models/user");
+//..................................................................................
 
+//config
 const MONGODB_URI =
   "mongodb+srv://kareem:Z2ERoOf2fT3lcqtO@store-tut.cns3t.azure.mongodb.net/store-tut?w=majority";
-
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "sessions",
 });
-
 app.set("view engine", "ejs");
-app.set("views", "views");
-
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-const authRoutes = require("./routes/auth");
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
@@ -36,6 +29,7 @@ app.use(
   })
 );
 
+// init
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -47,11 +41,6 @@ app.use((req, res, next) => {
     })
     .catch((err) => console.log(err));
 });
-
-app.use("/admin", adminRoutes);
-app.use(shopRoutes);
-app.use(errorController.get404);
-app.use(authRoutes);
 
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -73,3 +62,13 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+// routing
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
+
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
+app.use(errorController.get404);
+app.use(authRoutes);
