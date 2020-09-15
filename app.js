@@ -32,10 +32,8 @@ app.use(
     store: store,
   })
 );
-
 const csrfProtection = csrf();
 app.use(csrfProtection); //must be initialized after the session
-
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -46,6 +44,11 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => console.log(err));
+});
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 //init
