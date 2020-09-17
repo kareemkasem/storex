@@ -36,8 +36,14 @@ app.use(
 );
 const csrfProtection = csrf();
 app.use(csrfProtection); //must be initialized after the session
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 app.use(flash()); //must be initialized after the session
 
+// this is step is made to make sure that the user have all the mongoose provided methods by tying the plain user in the session to a mongoose handled use in the request
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -49,17 +55,12 @@ app.use((req, res, next) => {
     })
     .catch((err) => console.log(err));
 });
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
 
 //init
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    app.listen(3001);
+    app.listen(3000);
   })
   .catch((err) => {
     console.log(err);
