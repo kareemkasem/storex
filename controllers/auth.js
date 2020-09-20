@@ -61,7 +61,7 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
-  const { email, password, confirmPassword } = req.body;
+  const { email, password } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -82,9 +82,6 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email }).then((userDoc) => {
     if (userDoc) {
       req.flash("error", "user already exist");
-      return res.redirect("/signup");
-    } else if (password !== confirmPassword) {
-      req.flash("error", "passwords don't match");
       return res.redirect("/signup");
     } else {
       createUser(email, password)

@@ -1,6 +1,6 @@
 const express = require("express");
 const authController = require("../controllers/auth");
-const { check } = require("express-validator");
+const { check, body } = require("express-validator");
 //...................................................................
 
 const router = express.Router();
@@ -13,16 +13,30 @@ router.post("/login", authController.postLogin);
 
 router.post(
   "/signup",
-  check("email")
-    .isEmail()
-    .withMessage("Invalid Email")
-    .custom((input) => {
-      if (input === "kareemkasem@outlook.com") {
-        throw new Error("Admin email address is forbidden");
+  [
+    check("email") // searches body, cookies, headers and everywhere
+      .isEmail()
+      .withMessage("Invalid Email")
+      .custom((input) => {
+        if (input === "kareemkasem@outlook.com") {
+          throw new Error("Admin email address is forbidden");
+        } else {
+          return true;
+        }
+      }),
+    body(
+      // searches body only
+      "password",
+      "make sure the password is between 8 and 16 characters" // default error for all validators
+    ).isLength({ min: 8, max: 16 }),
+    body("confirmPassword").custom((input, { req }) => {
+      if (input !== req.body.password) {
+        throw new Error("passwords don't match");
       } else {
         return true;
       }
     }),
+  ],
   authController.postSignup
 );
 
