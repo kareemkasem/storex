@@ -1,5 +1,6 @@
-<% if(typeof errorMessage === "object" && errorMessage.length > 0){ %>
+<% if(errorMessage && typeof errorMessage === "object" && errorMessage.length >
+0){ %>
 <p class="user-message user-message__error"><%= errorMessage[0] %></p>
-<% } else if(errorMessage.length > 0){ %>
+<% } else if(errorMessage && errorMessage.length > 0){ %>
 <p class="user-message user-message__error"><%= errorMessage %></p>
 <% } %>
