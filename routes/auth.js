@@ -12,15 +12,10 @@ router.get("/signup", authController.getSignup);
 
 router.post(
   "/login",
-  [
-    body("email")
-      .isEmail()
-      .withMessage("please provide a valid email address")
-      .normalizeEmail() /*sanitizer: https://github.com/validatorjs/validator.js */,
-    body("password")
-      .isLength({ min: 8 })
-      .withMessage("make sure the password is between 8 and 16 characters"),
-  ],
+  body("email")
+    .isEmail()
+    .withMessage("please provide a valid email address")
+    .normalizeEmail() /*sanitizer: https://github.com/validatorjs/validator.js */,
   authController.postLogin
 );
 
