@@ -1,6 +1,7 @@
 const express = require("express");
 const authController = require("../controllers/auth");
 const { check, body } = require("express-validator");
+const User = require("../models/user");
 //...................................................................
 
 const router = express.Router();
@@ -23,6 +24,18 @@ router.post(
         } else {
           return true;
         }
+      })
+      .custom((input) => {
+        /* 
+          Async validation
+          here the express-validator will wrap this function in an async/await function
+          it will also handle the rejection as an error message automatically
+        */
+        return User.findOne({ email: input }).then((userDoc) => {
+          if (userDoc) {
+            return Promise.reject("User already Exists");
+          }
+        });
       }),
     body(
       // searches body only

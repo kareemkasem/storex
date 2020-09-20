@@ -35,6 +35,7 @@ exports.getSignup = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
+
   User.findOne({ email }).then((user) => {
     if (!user) {
       req.flash("error", `${email} is not found`);
@@ -72,31 +73,22 @@ exports.postSignup = (req, res, next) => {
     });
   }
 
-  const createUser = (email, password) => {
-    return bcrypt.hash(password, 12).then((hashedPass) => {
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPass) => {
       const newUser = new User({ email, password: hashedPass });
       return newUser.save();
-    });
-  };
-
-  User.findOne({ email }).then((userDoc) => {
-    if (userDoc) {
-      req.flash("error", "user already exist");
-      return res.redirect("/signup");
-    } else {
-      createUser(email, password)
-        .then(() => {
-          return transporter.sendMail({
-            to: email,
-            from: "kareemkasem@outlook.com",
-            subject: "sign up confirmation",
-            html: "<h1>You successfully signed up to storeX</h1>",
-          });
-        })
-        .then(() => res.redirect("/login"))
-        .catch((err) => console.log(err));
-    }
-  });
+    })
+    .then(() => {
+      res.redirect("/login");
+      return transporter.sendMail({
+        to: email,
+        from: "kareemkasem@outlook.com",
+        subject: "sign up confirmation",
+        html: "<h1>You successfully signed up to storeX</h1>",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postLogout = (req, res, next) => {
