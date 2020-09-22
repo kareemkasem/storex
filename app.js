@@ -8,8 +8,8 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const isAuth = require("./middleware/isAuth");
 const flash = require("connect-flash");
-
 const errorController = require("./controllers/error");
+
 const User = require("./models/user");
 //..................................................................................
 
@@ -50,10 +50,15 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then((user) => {
+      if (!user) {
+        return next();
+      }
       req.user = user;
       next();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw new Error(err);
+    });
 });
 
 //init
@@ -70,8 +75,10 @@ mongoose
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+const errorRoutes = require("./routes/errors");
 
 app.use("/admin", isAuth, adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
+app.use(errorRoutes);
 app.use(errorController.get404);
