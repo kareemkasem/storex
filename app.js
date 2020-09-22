@@ -82,3 +82,8 @@ app.use(shopRoutes);
 app.use(authRoutes);
 app.use(errorRoutes);
 app.use(errorController.get404);
+
+//Erros middleware
+app.use((error, req, res, next) => {
+  res.redirect("/500");
+});
