@@ -15,11 +15,7 @@ router.get("/products", adminController.getProducts);
 // /admin/add-product => POST
 router.post(
   "/add-product",
-  [
-    body("imageUrl").isURL().withMessage("incorrect image url"),
-    body("title").trim(),
-    body("description").trim(),
-  ],
+  [body("title").trim(), body("description").trim()],
   adminController.postAddProduct
 );
 
@@ -27,11 +23,7 @@ router.get("/edit-product/:productId", adminController.getEditProduct);
 
 router.post(
   "/edit-product",
-  [
-    body("imageUrl").isURL().withMessage("incorrect image url"),
-    body("title").trim(),
-    body("description").trim(),
-  ],
+  [body("title").trim(), body("description").trim()],
   adminController.postEditProduct
 );
 
