@@ -27,7 +27,31 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // parsers
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: "images" }).single("image"));
+
+const multerStorage = multer.diskStorage({
+  destination: "./images",
+  /* (req, file, cb) => {
+    cb(null, "images");
+  },*/
+  filename: (req, file, cb) => {
+    cb(null, `${new Date().toISOString()}-${file.originalname}`);
+  },
+});
+
+const multerFileFilter = (req, file, cb) => {
+  const mimetypes = ["image/png", "image/jpg", "image/jpeg"];
+  if (mimetypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+app.use(
+  multer({ storage: multerStorage, fileFilter: multerFileFilter }).single(
+    "image"
+  )
+);
 
 // session
 app.use(
