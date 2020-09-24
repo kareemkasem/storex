@@ -4,6 +4,7 @@ const Order = require("../models/order");
 
 const fs = require("fs");
 const path = require("path");
+const pdfKit = require("pdfkit");
 // .......................................................................
 
 exports.getProducts = (req, res, next) => {
@@ -161,25 +162,16 @@ exports.getInvoice = (req, res, next) => {
       } else {
         const invoiceName = `invoice-${orderId}.pdf`;
         const invoicePath = path.join("invoices", invoiceName);
-        fs.readFile(invoicePath, (err, data) => {
-          if (err) {
-            next(err);
-            return;
-          }
-          // res.setHeader("Content-Type", "application/pdf"); // browser identify it as pdf
-          // res.setHeader(
-          //   "Content-Disposition",
-          //   `inline; filename=${invoiceName}`
-          // ); // browser will open in browser (default) and give it proper name
-          // res.send(data);
-          const file = fs.createReadStream(invoicePath);
-          res.setHeader("Content-Type", "application/pdf"); // browser identify it as pdf
-          res.setHeader(
-            "Content-Disposition",
-            `inline; filename=${invoiceName}`
-          ); // browser will open in browser (default) and give it proper name
-          file.pipe(res); // write stream to the response object of type NodeJs.writableStream
-        });
+
+        const pdf = new pdfKit(); //readable stream
+        pdf.pipe(fs.createWriteStream(invoicePath)); //stream to fs
+        pdf.pipe(res); // stream to client
+
+        pdf.text("testing");
+        res.setHeader("Content-Type", "application/pdf"); // browser identify it as pdf
+        res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`); // browser will open in browser (default) and give it proper name
+
+        pdf.end(); // end the streams
       }
     })
     .catch((err) => next(err));
