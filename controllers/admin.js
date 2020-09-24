@@ -13,27 +13,27 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const image = req.body.image;
+  const image = req.file;
+  const imageUrl = image.path;
   const price = req.body.price;
   const description = req.body.description;
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
+  if (!image) {
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Add Product",
       path: "/admin/add-product",
       readd: true,
       editing: false,
-      product: { title, image, price, description },
-      errorMessage: errors.array()[0].msg,
+      product: { title, price, description },
+      errorMessage: "wrong or no files attached. make sure you add an image.",
     });
   }
 
   const product = new Product({
-    title: title,
-    price: price,
-    description: description,
-    image: image,
+    title,
+    price,
+    description,
+    imageUrl,
     userId: req.user,
   });
   product
@@ -79,7 +79,7 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedimage = req.body.image;
+  const updatedImage = req.file;
   const updatedDesc = req.body.description;
 
   const errors = validationResult(req);
@@ -102,7 +102,9 @@ exports.postEditProduct = (req, res, next) => {
       product.title = updatedTitle;
       product.price = updatedPrice;
       product.description = updatedDesc;
-      product.image = updatedimage;
+      if (updatedImage) {
+        product.imageUrl = updatedImage.path;
+      }
       product.save().then(() => {
         res.redirect("/admin/products");
       });
