@@ -167,11 +167,48 @@ exports.getInvoice = (req, res, next) => {
         pdf.pipe(fs.createWriteStream(invoicePath)); //stream to fs
         pdf.pipe(res); // stream to client
 
-        pdf.text("testing");
-        res.setHeader("Content-Type", "application/pdf"); // browser identify it as pdf
-        res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`); // browser will open in browser (default) and give it proper name
+        pdf.fontSize(28).text("Invoice", { underline: true });
+        pdf.text(" ");
+
+        pdf.fontSize(18).fillColor("blue").text("products: ");
+
+        order.products.forEach((prod) => {
+          pdf
+            .fontSize(15)
+            .fillColor("green")
+            .text("name: ", { continued: true })
+            .fillColor("black")
+            .text(prod.product.title);
+          pdf
+            .fillColor("green")
+            .text("amount: ", { continued: true })
+            .fillColor("black")
+            .text(prod.quantity);
+          pdf
+            .fillColor("green")
+            .text("total: ", { continued: true })
+            .fillColor("black")
+            .text(prod.quantity * prod.product.price);
+          pdf.text(" ");
+        });
+
+        pdf.text(" ");
+        pdf
+          .fontSize(18)
+          .fillColor("blue")
+          .text("Total cost: ", { continued: true })
+          .fillColor("black")
+          .text(
+            order.products.reduce(
+              (acc, curr) => curr.quantity * curr.product.price + acc,
+              0
+            )
+          );
 
         pdf.end(); // end the streams
+
+        res.setHeader("Content-Type", "application/pdf"); // browser identify it as pdf
+        res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`); // browser will open in browser (default) and give it proper name
       }
     })
     .catch((err) => next(err));
