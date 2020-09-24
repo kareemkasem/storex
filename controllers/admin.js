@@ -33,7 +33,7 @@ exports.postAddProduct = (req, res, next) => {
     title,
     price,
     description,
-    imageUrl,
+    imageUrl: "/" + imageUrl, //indicate absolute path
     userId: req.user,
   });
   product

@@ -23,7 +23,17 @@ const store = new MongoDBStore({
   collection: "sessions",
 });
 app.set("view engine", "ejs");
+
+// static serving
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
+/*
+/images is passes as a part of the url the request that the image is served from
+BUT as stated by the express docs:
+ "Express looks up the files relative to the static directory, so the name of the static directory is NOT part of the URL."
+ which means the static server will try to load images on /imageName.png not /images/imageName.png
+ and  that's why we added the "/images" to the middleware
+*/
 
 // parsers
 app.use(bodyParser.urlencoded({ extended: false }));
