@@ -159,6 +159,8 @@ exports.getInvoice = (req, res, next) => {
       next(err);
       return;
     }
+    res.setHeader("Content-Type", "application/pdf"); // browser identify it as pdf
+    res.setHeader("Content-Disposition", `inline, filename=${invoiceName}`); // browser will open in browser (default) and give it proper name
     res.send(data);
   });
 };
