@@ -151,6 +151,19 @@ exports.getOrders = (req, res, next) => {
     });
 };
 
+exports.postDelteOrder = (req, res, next) => {
+  const orderId = req.body.orderId;
+  Order.findByIdAndDelete(orderId)
+    .then((result) => {
+      res.redirect("/orders");
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+};
+
 exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
   Order.findById(orderId)
