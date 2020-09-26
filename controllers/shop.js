@@ -77,18 +77,16 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
-  const prodId = req.body.productId;
+  const prodId = req.params.productId;
   Product.findById(prodId)
     .then((product) => {
       return req.user.addToCart(product);
     })
     .then((result) => {
-      res.redirect("/cart");
+      res.status(200).json({ message: "success" });
     })
     .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      res.status(500).json({ message: "failed to add to cart" });
     });
 };
 

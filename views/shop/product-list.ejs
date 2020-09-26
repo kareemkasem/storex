@@ -7,6 +7,7 @@
 
             <main>
                 <% if (prods.length > 0) { %>
+                    <p class="user-message user-message__error" id="add-error" style="display: none;">Unable to add to cart</p>
                     <div class="grid">
                         <% for (let product of prods) { %>
                             <article class="card product-item">
@@ -40,3 +41,4 @@
                         <% } %>
             </main>
             <%- include('../includes/end.ejs') %>
+            <script src="/js/add.js"></script>

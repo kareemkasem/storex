@@ -4,6 +4,7 @@
     <body>
         <%- include('../includes/navigation.ejs') %>
         <main class="centered">
+            <p class="user-message user-message__error" id="add-error" style="display: none;">Unable to add to cart</p>
             <h1><%= product.title %></h1>
             <hr>
             <div class="image">
@@ -16,3 +17,4 @@
             <% } %>
         </main>
         <%- include('../includes/end.ejs') %>
+        <script src="/js/add.js"></script>
