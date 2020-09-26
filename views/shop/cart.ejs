@@ -6,16 +6,15 @@
         <%- include('../includes/navigation.ejs') %>
         <main>
             <% if (products.length > 0) { %>
+                <p class="user-message user-message__error" id="delete-error" style="display:none;">unable to delete</p>
                 <ul class="cart__item-list">
                     <% products.forEach(p => { %>
-                        <li class="cart__item">
+                        <li class="cart__item" id="parent">
                             <h1><%= p.productId.title %></h1>
                             <h2>Quantity: <%= p.quantity %></h2>
-                            <form action="/cart-delete-item" method="POST">
                                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                                <input type="hidden" value="<%= p.productId._id %>" name="productId">
-                                <button class="btn danger" type="submit">Delete</button>
-                            </form>
+                                <input type="hidden" value="<%= p.productId._id %>" id="id" name="productId">
+                                <button class="btn danger" type="button" onclick="deleteParent(this, '/cart-delete-item')">Delete</button>
                         </li>
                     <% }) %>
                 </ul>
@@ -32,3 +31,4 @@
             <% } %>
         </main>
         <%- include('../includes/end.ejs') %>
+        <script src="/js/delete.js"></script>

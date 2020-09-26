@@ -5,19 +5,18 @@
     <body>
         <%- include('../includes/navigation.ejs') %>
         <main>
+            <p class="user-message user-message__error" id="delete-error" style="display:none;">unable to delete</p>
             <% if (orders.length <= 0) { %>
                 <h1>Nothing there!</h1>
             <% } else { %>
                 <ul class="orders">
                     <% orders.forEach(order => { %>
-                        <li class="orders__item">
+                        <li class="orders__item" id="parent">
                             <div style="display: flex; justify-content: space-between;">
                                 <h1>Order - # <%= order._id %> - <a href="/orders/<%= order._id%>">Invoice</a></h1>
-                                <form action="/delete-order" method="POST">
                                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                                    <input type="hidden" value="<%= order._id %>" name="orderId">
-                                    <button class="btn danger" type="submit">Delete</button>
-                                </form>
+                                    <input type="hidden" value="<%= order._id %>" id="id" name="orderId">
+                                    <button class="btn danger" type="button" onclick="deleteParent(this, '/delete-order')">Delete</button>
                             </div>
                             <ul class="orders__products">
                                 <% order.products.forEach(p => { %>
@@ -31,3 +30,4 @@
             <% } %>
         </main>
         <%- include('../includes/end.ejs') %>
+        <script src="/js/delete.js"></script>

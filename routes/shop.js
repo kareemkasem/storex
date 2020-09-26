@@ -15,13 +15,17 @@ router.get("/cart", isAuth, shopController.getCart);
 
 router.post("/cart", isAuth, shopController.postCart);
 
-router.post("/cart-delete-item", isAuth, shopController.postCartDeleteProduct);
+router.delete(
+  "/cart-delete-item/:productId",
+  isAuth,
+  shopController.cartDeleteProduct
+);
 
 router.post("/create-order", isAuth, shopController.postOrder);
 
 router.get("/orders", isAuth, shopController.getOrders);
 
-router.post("/delete-order", isAuth, shopController.postDelteOrder);
+router.delete("/delete-order/:orderId", isAuth, shopController.postDelteOrder);
 
 router.get("/orders/:orderId", isAuth, shopController.getInvoice);
 
