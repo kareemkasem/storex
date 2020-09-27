@@ -12,6 +12,7 @@ const flash = require("connect-flash");
 const errorController = require("./controllers/error");
 
 const User = require("./models/user");
+const AuthedUser = require("./models/authed-user");
 //..................................................................................
 
 //config
@@ -84,19 +85,20 @@ app.use(flash()); //must be initialized after the session
 // this is step is made to make sure that the user have all the mongoose provided methods by tying the plain user in the session to a mongoose handled use in the request
 app.use((req, res, next) => {
   if (!req.session.user) {
-    return next();
+    next();
+  } else {
+    User.findById(req.session.user._id)
+      .then((user) => {
+        if (!user) {
+          return next();
+        }
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
   }
-  User.findById(req.session.user._id)
-    .then((user) => {
-      if (!user) {
-        return next();
-      }
-      req.user = user;
-      next();
-    })
-    .catch((err) => {
-      throw new Error(err);
-    });
 });
 
 //init

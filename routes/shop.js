@@ -1,15 +1,17 @@
 const isAuth = require("../middleware/isAuth");
 const express = require("express");
 const shopController = require("../controllers/shop");
+
+const autoLogin = require("../middleware/autoLogin");
 //........................................................................
 
 const router = express.Router();
 
-router.get("/", shopController.getIndex);
+router.get("/", autoLogin, shopController.getIndex);
 
-router.get("/products", shopController.getProducts);
+router.get("/products", autoLogin, shopController.getProducts);
 
-router.get("/products/:productId", shopController.getProduct);
+router.get("/products/:productId", autoLogin, shopController.getProduct);
 
 router.get("/cart", isAuth, shopController.getCart);
 
