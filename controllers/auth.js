@@ -6,6 +6,7 @@ const sendgridTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
 
 const User = require("../models/user");
+const AuthedUser = require("../models/authed-user");
 //................................................................
 
 const transporter = nodemailer.createTransport(
@@ -57,12 +58,28 @@ exports.postLogin = (req, res, next) => {
         .compare(password, user.password)
         .then((doMatch) => {
           if (doMatch) {
-            req.session.isLoggedIn = true;
-            req.session.user = user;
-            req.session.save((err) => {
-              err && console.log(err);
-              res.redirect("/");
+            const newAuthedUser = new AuthedUser({
+              ip: req.connection.remoteAddress,
+              email,
+              password: user.password,
             });
+            newAuthedUser
+              .save()
+              .then(() => {
+                req.session.isLoggedIn = true;
+                req.session.user = user;
+                req.session.save((err) => {
+                  err && console.log(err);
+                  res.redirect("/");
+                });
+              })
+              .catch(() => {
+                req.flash(
+                  "error",
+                  `couldn't sign in properly, please try again`
+                );
+                return res.redirect("/login");
+              });
           } else {
             req.flash("error", "password is incorrect");
             res.redirect("/login");
@@ -105,10 +122,16 @@ exports.postSignup = (req, res, next) => {
 };
 
 exports.postLogout = (req, res, next) => {
-  req.session.destroy((err) => {
-    console.log(err);
-    res.redirect("/");
-  });
+  AuthedUser.deleteOne({ ip: req.connection.remoteAddress })
+    .then(() => {
+      req.session.destroy((err) => {
+        console.log(err);
+        res.redirect("/");
+      });
+    })
+    .catch((err) => {
+      throw new Error(err);
+    });
 };
 
 exports.getResetPassword = (req, res, next) => {
