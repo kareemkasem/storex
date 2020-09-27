@@ -5,8 +5,9 @@ const Order = require("../models/order");
 const fs = require("fs");
 const path = require("path");
 const pdfKit = require("pdfkit");
-const { json } = require("express");
 // .......................................................................
+
+const ITEMS_PER_PAGE = 3;
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -42,7 +43,10 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  const page = req.query.page;
   Product.find()
+    .skip((page - 1) * ITEMS_PER_PAGE) // skip certain number of documents
+    .limit(ITEMS_PER_PAGE) // only get certain number of documents
     .then((products) => {
       res.render("shop/index", {
         prods: products,
