@@ -44,14 +44,29 @@ exports.getProduct = (req, res, next) => {
 
 exports.getIndex = (req, res, next) => {
   const page = req.query.page;
+  let numberOfProducts;
+
   Product.find()
-    .skip((page - 1) * ITEMS_PER_PAGE) // skip certain number of documents
-    .limit(ITEMS_PER_PAGE) // only get certain number of documents
+    .countDocuments({}, (err, productCount) => {
+      return productCount;
+    })
+    .then((productCount) => {
+      numberOfProducts = productCount;
+      return Product.find()
+        .skip(page ? (page - 1) * ITEMS_PER_PAGE : 0) // skip certain number of documents
+        .limit(ITEMS_PER_PAGE); // only get certain number of documents
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
         path: "/",
+        numberOfPages: numberOfProducts / ITEMS_PER_PAGE,
+        hasNext: ITEMS_PER_PAGE * page < numberOfProducts,
+        hasPrevious: page !== 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(numberOfProducts / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
