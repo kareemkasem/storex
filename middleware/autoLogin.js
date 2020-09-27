@@ -33,7 +33,6 @@ module.exports = (req, res, next) => {
               next();
             });
         } else {
-          err && console.log(err);
           next();
         }
       })

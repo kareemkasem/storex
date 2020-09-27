@@ -43,7 +43,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  const page = req.query.page;
+  const page = parseInt(req.query.page) || 1;
   let numberOfProducts;
 
   Product.find()
@@ -53,7 +53,7 @@ exports.getIndex = (req, res, next) => {
     .then((productCount) => {
       numberOfProducts = productCount;
       return Product.find()
-        .skip(page ? (page - 1) * ITEMS_PER_PAGE : 0) // skip certain number of documents
+        .skip((page - 1) * ITEMS_PER_PAGE) // skip certain number of documents
         .limit(ITEMS_PER_PAGE); // only get certain number of documents
     })
     .then((products) => {
@@ -61,7 +61,7 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         pageTitle: "Shop",
         path: "/",
-        numberOfPages: numberOfProducts / ITEMS_PER_PAGE,
+        currentPage: page,
         hasNext: ITEMS_PER_PAGE * page < numberOfProducts,
         hasPrevious: page !== 1,
         nextPage: page + 1,
